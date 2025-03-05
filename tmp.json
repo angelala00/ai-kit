@@ -1,0 +1,44 @@
+{
+  'question': [
+    'Each yogurt is topped with 8 banana slices.  One banana will yield 10 slices.  If Vivian needs to make 5 yogurts, how many bananas does she need to buy?',
+    'A building has 20 floors. Each floor is 3 meters high, except for the last two floors. The last two floors are each 0.5 meters higher. How tall is the building?',
+    'Cheryl has thrice as many colored pencils as Cyrus. Madeline has 63 colored pencils and only half of what Cheryl has. How many colored pencils do the three of them have altogether?'
+  ],
+  'answer': [
+    '4',
+    '61',
+    '231'
+  ],
+  'prompt': [
+    [
+      {
+        'content': '\nRespond in the following format:\n<reasoning>\n...\n</reasoning>\n<answer>\n...\n</answer>\n',
+        'role': 'system'
+      },
+      {
+        'content': 'Each yogurt is topped with 8 banana slices.  One banana will yield 10 slices.  If Vivian needs to make 5 yogurts, how many bananas does she need to buy?',
+        'role': 'user'
+      }
+    ],
+    [
+      {
+        'content': '\nRespond in the following format:\n<reasoning>\n...\n</reasoning>\n<answer>\n...\n</answer>\n',
+        'role': 'system'
+      },
+      {
+        'content': 'A building has 20 floors. Each floor is 3 meters high, except for the last two floors. The last two floors are each 0.5 meters higher. How tall is the building?',
+        'role': 'user'
+      }
+    ],
+    [
+      {
+        'content': '\nRespond in the following format:\n<reasoning>\n...\n</reasoning>\n<answer>\n...\n</answer>\n',
+        'role': 'system'
+      },
+      {
+        'content': 'Cheryl has thrice as many colored pencils as Cyrus. Madeline has 63 colored pencils and only half of what Cheryl has. How many colored pencils do the three of them have altogether?',
+        'role': 'user'
+      }
+    ]
+  ]
+}q
