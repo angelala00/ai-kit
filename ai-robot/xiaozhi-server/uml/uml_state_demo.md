@@ -14,3 +14,10 @@ stateDiagram
 
     kDeviceStateIdle --> kDeviceStateListening : 唤醒检测
     kDeviceStateSpeaking --> kDeviceStateIdle : 语音播报结束
+```
+```mermaid
+sequenceDiagram
+    participant A as 用户
+    participant B as 系统
+    A->>B: 请求数据
+    B->>A: 返回数据

@@ -110,7 +110,7 @@
 - Qwen/DeepSeek（国产大模型）
 - Claude/Mistral/Gemma（其他重要 LLM）
 
-### 7. 多模态大语言模型
+### 7. 多模态大语言模型解构分析
 
 
 ---
