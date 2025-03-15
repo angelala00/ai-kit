@@ -1,3 +1,9 @@
+OnWakeWordDetected
+为啥发送完唤醒词音频直接进入Listening了？之前不是需要speaking么？
+
+
+
+
 http://182.92.219.73:8000/health
 
 
@@ -39,16 +45,19 @@ client接收/服务端发送
 语音
     进制制语音数据
 hello
-    "{\"type\":\"hello\"}"  transport  ??
+    "{\"type\":\"hello\",\"transport\":\"websocket\",\"audio_params\":{\"sample_rate\":\"86400\"}}"
 tts:start
-    "{\"type\":\"tts\"}"
+    "{\"type\":\"tts\",\"state\":\"start\"}"
 tts:stop
-    "{\"type\":\"tts\"}"
+    "{\"type\":\"tts\",\"state\":\"stop\"}"
 tts:sentence_start
-    "{\"type\":\"tts\"}"
+    "{\"type\":\"tts\",\"state\":\"sentence_start\",\"text\":\"nihao\"}"
 stt:text
+    "{\"type\":\"stt\",\"text\":\"nihao\"}"
 llm:emotion
+    "{\"type\":\"llm\",\"emotion\":\"happy\"}"
 iot:commands
+    "{\"type\":\"iot\",\"commands\":\"commandsstr\"}"
 
 
 OnIncomingJson

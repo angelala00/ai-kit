@@ -1,7 +1,6 @@
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 import json
-import websockets
 import numpy as np
 import opuslib
 
@@ -105,17 +104,17 @@ async def handle_audio_stream(binary_data: bytes):
         # 16000hz 60ms 960个采样点，转换成float32之后占1920个字节
         block_size = 1920
         if sample_buffer.size >= block_size:
-            print(f"准备发送数据")
+            # print(f"准备发送数据")
             # 取出前 block_size 个采样点
             block = sample_buffer[:block_size]
             # 将剩余数据保留在缓冲区中
             sample_buffer = sample_buffer[block_size:]
             # 发送数据给 STT 服务，转换为字节流
-            if stt.asr_channel_task and stt.asr_channel_task.done() and stt.asr_websocket:
+            if stt.asr_channel_init_and_recv_task and stt.asr_websocket:
                 await stt.asr_websocket.send(block.tobytes())
             else:
-                print(f"asr_websocket还未准备好，丢弃")
-            print(f"完成发送数据")
+                print(f"asr_websocket还未准备好，丢弃",stt.asr_websocket)
+            # print(f"完成发送数据")
     except Exception as e:
         print(f"Error handling audio stream: {e}")
 

@@ -34,6 +34,7 @@ async def websocket_endpoint(websocket: WebSocket):
     processor.websocket = websocket
     #初始化asr websocket（异步）
     stt.initialize_asr_channels()
+    # print(f"stt.asr_channel_init_and_recv_task:{stt.asr_channel_init_and_recv_task}")
     def asr_recognized_callback(query):
         tts.init_synthesizer()
         tts.tts_on_open_callback = processor.tts_start_callback
@@ -56,11 +57,18 @@ async def websocket_endpoint(websocket: WebSocket):
                     await websocket.send_text(json.dumps({"status": "error", "message": "Invalid JSON format"}))
             elif "bytes" in message:
                 binary_data = message["bytes"]
-                print(f"Received binary audio data, length: {len(binary_data)} bytes")
+                # print(f"Received binary audio data, length: {len(binary_data)} bytes")
                 await processor.handle_audio_stream(binary_data)
     except WebSocketDisconnect:
         print("Client disconnected")
-
+    except RuntimeError as e:
+        if str(e) == 'Cannot call "receive" once a disconnect message has been received.':
+            print("Client disconnected (RuntimeError detected disconnect)")
+            # 同样在这里添加断线后的清理逻辑
+        else:
+            raise e
+    finally:
+        await stt.close_asr_channels()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

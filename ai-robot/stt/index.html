@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Microphone Streaming</title>
+</head>
+<body>
+    <h1>Microphone Audio Streaming</h1>
+    <button id="start">Start Streaming</button>
+    <button id="stop" disabled>Stop Streaming</button>
+
+    <script>
+        let audioContext, mediaStream, socket, processor;
+
+        document.getElementById('start').onclick = async () => {
+            try {
+                // Get microphone input
+                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                // Create audio context and source
+                audioContext = new AudioContext();
+                const source = audioContext.createMediaStreamSource(mediaStream);
+
+                // Create a ScriptProcessorNode for audio processing
+                processor = audioContext.createScriptProcessor(2048, 2, 2);
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                // Open WebSocket connection
+                socket = new WebSocket('ws://127.0.0.1:7701/ws'); // Replace with your server address
+                socket.onopen = () => console.log('WebSocket connection established');
+
+                // Send audio data through WebSocket
+                processor.onaudioprocess = (e) => {
+
+                    if (socket.readyState === WebSocket.OPEN) {
+                        const audioData = e.inputBuffer.getChannelData(0); // Get audio data
+                        const audioBuffer = new Float32Array(audioData);  // Copy data
+                        socket.send(audioBuffer.buffer);                  // Send as ArrayBuffer
+
+<!--                        let samples = new Float32Array(e.inputBuffer.getChannelData(0))-->
+<!--                        samples = downsampleBuffer(samples, expectedSampleRate);-->
+
+<!--                        let buf = new Int16Array(samples.length);-->
+<!--                        for (var i = 0; i < samples.length; ++i) {-->
+<!--                        let s = samples[i];-->
+<!--                        if (s >= 1)-->
+<!--                          s = 1;-->
+<!--                        else if (s <= -1)-->
+<!--                          s = -1;-->
+
+<!--                        samples[i] = s;-->
+<!--                        buf[i] = s * 32767;-->
+<!--                        }-->
+
+<!--                        socket.send(samples);-->
+
+                    }
+                };
+
+                document.getElementById('start').disabled = true;
+                document.getElementById('stop').disabled = false;
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+            }
+
+
+let expectedSampleRate = 16000;
+recordSampleRate = audioContext.sampleRate;
+// this function is copied from
+// https://github.com/awslabs/aws-lex-browser-audio-capture/blob/master/lib/worker.js#L46
+function downsampleBuffer(buffer, exportSampleRate) {
+console.log("exportSampleRate"+exportSampleRate+" recordSampleRate"+recordSampleRate)
+  if (exportSampleRate === recordSampleRate) {
+    return buffer;
+  }
+  var sampleRateRatio = recordSampleRate / exportSampleRate;
+  var newLength = Math.round(buffer.length / sampleRateRatio);
+  var result = new Float32Array(newLength);
+  var offsetResult = 0;
+  var offsetBuffer = 0;
+  while (offsetResult < result.length) {
+    var nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+    var accum = 0, count = 0;
+    for (var i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
+      accum += buffer[i];
+      count++;
+    }
+    result[offsetResult] = accum / count;
+    offsetResult++;
+    offsetBuffer = nextOffsetBuffer;
+  }
+  return result;
+};
+
+
+        };
+
+        document.getElementById('stop').onclick = () => {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            if (processor) {
+                processor.disconnect();
+            }
+            if (audioContext) {
+                audioContext.close();
+            }
+            if (socket) {
+                socket.close();
+            }
+            document.getElementById('start').disabled = false;
+            document.getElementById('stop').disabled = true;
+            console.log('Stopped streaming');
+        };
+    </script>
+</body>
+</html>
