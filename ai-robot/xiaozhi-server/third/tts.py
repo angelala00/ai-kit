@@ -1,5 +1,4 @@
 import time
-import pyaudio
 import dashscope
 from dashscope.api_entities.dashscope_response import SpeechSynthesisResponse
 from dashscope.audio.tts_v2 import *
