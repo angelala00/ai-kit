@@ -1,0 +1,13 @@
+Received text: {"type":"hello","version": 1,"transport":"websocket","audio_params":{"format":"opus", "sample_rate":16000, "channels":1, "frame_duration":60}}
+Sending text: {}
+
+
+Received text: {"session_id":"","type":"iot","descriptors":[{"name":"Speaker","description":"当前 AI 机器人的扬声器","properties":{"volume":{"description":"当前音量值","type":"number"}},"methods":{"SetVolume":{"description":"设置音量","parameters":{"volume":{"description":"0到100之间的整数","type":"number"}}}}},{"name":"Lamp","description":"一个测试用的灯","properties":{"power":{"description":"灯是否打开","type":"boolean"}},"methods":{"TurnOn":{"description":"打开灯","parameters":{}},"TurnOff":{"description":"关闭灯","parameters":{}}}}]}
+
+
+
+Received text: {"session_id":"","type":"listen","state":"start","mode":"auto"}
+
+
+
+Received text: {"session_id":"","type":"iot","states":[{"name":"Speaker","state":{"volume":100}},{"name":"Lamp","state":{"power":false}}]}

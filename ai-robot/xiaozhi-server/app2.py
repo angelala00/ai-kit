@@ -2,7 +2,12 @@ from fastapi import FastAPI
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 import uvicorn
-import core.handel.processor
+import core.handle.processor as processor
+import json
+import websockets
+import third.stt as stt
+import third.llm as llm
+import third.tts as tts
 
 app = FastAPI()
 
@@ -24,7 +29,20 @@ async def websocket_endpoint(websocket: WebSocket):
     # else:
     #     print("Authorization header not found")
 
+
     await websocket.accept()
+    processor.websocket = websocket
+    #初始化asr websocket（异步）
+    stt.initialize_asr_channels()
+    def asr_recognized_callback(query):
+        tts.init_synthesizer()
+        tts.tts_on_open_callback = processor.tts_start_callback
+        tts.tts_on_data_callback = processor.tts_byte_callback
+        tts.tts_on_close_callback = processor.tts_end_callback
+        llm.chat_with_query(query)
+
+    stt.asr_websocket_recognized_callback = asr_recognized_callback
+
     try:
         while True:
             message = await websocket.receive()
@@ -33,12 +51,13 @@ async def websocket_endpoint(websocket: WebSocket):
                 print("Received text:", text_data)
                 try:
                     json_data = json.loads(text_data)
-                    await processor.handle_json_message(websocket, json_data)
+                    await processor.handle_json_message(json_data)
                 except json.JSONDecodeError:
                     await websocket.send_text(json.dumps({"status": "error", "message": "Invalid JSON format"}))
             elif "bytes" in message:
                 binary_data = message["bytes"]
-                await processor.handle_audio_stream(websocket, binary_data)
+                print(f"Received binary audio data, length: {len(binary_data)} bytes")
+                await processor.handle_audio_stream(binary_data)
     except WebSocketDisconnect:
         print("Client disconnected")
 
